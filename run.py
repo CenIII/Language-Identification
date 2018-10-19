@@ -19,7 +19,7 @@ class cfg(object):
 	### model params
 	hiddenSize = 100
 	### training params
-	epochNum = 2
+	epochNum = 30
 	batchSize = 128
 	lr = 1e-1
 	### encode 
@@ -48,7 +48,7 @@ def runTrain():
 	ldTest = lhandler.getLoader('test', cfg.dataPath, cfg.endec)
 	evaluator = Evaluator(outdir=cfg.outDir)
 	acc = evaluator.eval(net, ldTest)
-	print('- Accuracy on test set: '+str(np.round(acc,2)))
+	print('- Accuracy on test set: '+str(np.round(acc)))
 	return net
 
 def runEval():
@@ -60,7 +60,7 @@ def runEval():
 	loader = lhandler.getLoader(cfg.evalset, cfg.dataPath, cfg.endec)
 	evaluator = Evaluator()
 	acc = evaluator.eval(net, loader)
-	print('- Accuracy on '+cfg.evalset+' set is:'+str(np.round(acc,2)))
+	print('- Accuracy on '+cfg.evalset+' set is:'+str(np.round(acc)))
 
 
 def main():
