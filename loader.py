@@ -1,5 +1,4 @@
 # loader
-
 import numpy as np
 import os
 from sklearn.preprocessing import LabelEncoder
@@ -152,8 +151,6 @@ class _TrainDataLoader(_Loader):
 				self.shuffle()
 			return self.feed()
 
-		
-
 class _EvalDataLoader(_Loader):
 	"""docstring for _EvalDataLoader"""
 	def __init__(self, mode, datapath, endec):
@@ -174,7 +171,6 @@ class _EvalDataLoader(_Loader):
 		else:
 			self.cnt = 0
 			return {}
-
 
 class LoaderHandler(object):
 	"""docstring for DataLoader"""

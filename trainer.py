@@ -65,7 +65,6 @@ class Trainer(object):
 				fc.params[key] -= self.lr*fc.grad[key]
 		return
 
-
 class Evaluator(object):
 	"""docstring for Evaluator"""
 	def __init__(self, outdir='./out'):

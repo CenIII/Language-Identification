@@ -1,5 +1,4 @@
 #layers
-
 import numpy as np
 
 class SigmoidLayer(object):
