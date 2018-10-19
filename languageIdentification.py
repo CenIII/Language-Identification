@@ -18,13 +18,13 @@ class cfg(object):
 	### model params
 	hiddenSize = 100
 	### training params
-	epochNum = 2
+	epochNum = 20
 	batchSize = 128
 	lr = 1e-1
-	### encode 
+	### encode
 	endec = None
 
-def parseCmd():  # -e train ./net.obj -o 
+def parseCmd():  # -e train ./net.obj -o
 	trainpath, devpath, testpath = sys.argv[1:4]
 	cfg.dataPath = {'train':trainpath, 'dev':devpath, 'test':testpath}
 	cfg.endec = CharEncoder(cfg.dataPath)
@@ -36,6 +36,12 @@ def parseCmd():  # -e train ./net.obj -o
 	if('-o' in sys.argv):
 		idx = sys.argv.index('-o')
 		cfg.outDir = sys.argv[idx+1]
+	if('-h' in sys.argv):
+		idx = sys.argv.index('-h')
+		cfg.hiddenSize = int(sys.argv[idx+1])
+	if('-l' in sys.argv):
+		idx = sys.argv.index('-l')
+		cfg.lr = float(sys.argv[idx+1])
 
 def runTrain():
 	print('- Start training:')
@@ -71,5 +77,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
