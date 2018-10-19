@@ -14,7 +14,7 @@ class CharEncoder(object):
 		warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 		charDict = {}
 		for filename in ['train', 'dev', 'test']:
-			with open(os.path.join(datapath,filename), 'r', encoding='latin-1') as f:
+			with open(datapath[filename], 'r', encoding='latin-1') as f:
 				line = f.readline()
 				while line:
 					for c in line:
@@ -26,6 +26,7 @@ class CharEncoder(object):
 		ints = self.labelEnc.transform(charList)
 		self.onehotEnc = OneHotEncoder(sparse=False)
 		self.onehotEnc.fit(ints.reshape(len(ints), 1))
+		self.inplen = self.onehotEnc.n_values_
 		
 	def trans(self, charList): # a list of chars
 		integer_encoded = self.labelEnc.transform(charList)
@@ -43,7 +44,7 @@ class _Loader(object):
 		self.w2n = {'ENGLISH':0, 'ITALIAN':1, 'FRENCH':2}
 		self.n2w = ('ENGLISH', 'ITALIAN', 'FRENCH')
 		self.mode = mode
-		self.datapath = datapath
+		self.datapath = datapath[mode]
 		self.endec = endec
 		self.data = self._loadAll()  #data[lineIndx][unitIndx]:(English, str]
 		self.idx2d = self._get2dIdx()
@@ -69,19 +70,22 @@ class _Loader(object):
 					substrList.append(list(word[i:i+5])) # ['s','a','p',...]
 		return substrList
 
-	def _loadAll(self):
-		filepath = os.path.join(self.datapath, self.mode)
-		# load all data
+	def _loadLines(self):
 		lineList = []
-		with open(filepath, "r", encoding="latin-1") as f:
+		with open(self.datapath, "r", encoding="latin-1") as f:
 			line = f.readline()
 			while line:
 				lineList.append(line)
 				line = f.readline()
+		return lineList
+
+	def _loadAll(self):
+		# load all data
+		lineList = self._loadLines()
 		# if test, then join in the soln
 		if(self.mode=='test'):
 			# load soln
-			with open(filepath+'_solutions', "r", encoding="latin-1") as f:
+			with open(self.datapath+'_solutions', "r", encoding="latin-1") as f:
 				cnt = 0
 				while True:
 					soln = f.readline()
@@ -179,8 +183,10 @@ class LoaderHandler(object):
 		super(LoaderHandler, self).__init__()
 		self.modeList = ['train','dev','test']
 
-	def getLoader(self, mode, datapath, endec, batchSize=4):
+	def getLoader(self, mode, datapath, endec, batchSize=4, forceEval=False):
 		assert(mode in self.modeList)
+		if forceEval:
+			return _EvalDataLoader(mode, datapath, endec)
 		if(mode=='train'):
 			return _TrainDataLoader(mode, datapath, endec, batchSize)
 		else:

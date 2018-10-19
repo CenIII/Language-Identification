@@ -66,10 +66,10 @@ class SoftmaxLayer(object):
 		
 class LINet(object):
 	"""docstring for LINet"""
-	def __init__(self, hiddenSize):
+	def __init__(self, hiddenSize, inputSize):
 		super(LINet, self).__init__()
 		self.fc = []
-		self.fc.append(LinearLayer(660, hiddenSize))
+		self.fc.append(LinearLayer(inputSize, hiddenSize))
 		self.sig = SigmoidLayer(hiddenSize)
 		self.fc.append(LinearLayer(hiddenSize, 3))
 		self.softmax = SoftmaxLayer()

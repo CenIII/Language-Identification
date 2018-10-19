@@ -7,50 +7,68 @@ from trainer import Trainer, Evaluator
 from layers import LINet, Criterion
 from loader import LoaderHandler, CharEncoder
 
-### data path
-dataPath = './languageIdentification.data'
-### model params
-hiddenSize = 600
-### training params
-epochNum = 30
-batchSize = 128
-lr = 5e-3
-### 
-endec = CharEncoder(dataPath)
+class cfg(object):
+	###### CONFIGURATION ######
+	### data path
+	dataPath = {} #'./languageIdentification.data'
+	outDir = './out'
+	mode = 'train'
+	### if mode=='eval':
+	evalset = ''
+	netpath = ''
+	### model params
+	hiddenSize = 100
+	### training params
+	epochNum = 2
+	batchSize = 128
+	lr = 1e-1
+	### encode 
+	endec = None
+
+def parseCmd():  # -e train ./net.obj -o 
+	trainpath, devpath, testpath = sys.argv[1:4]
+	cfg.dataPath = {'train':trainpath, 'dev':devpath, 'test':testpath}
+	cfg.endec = CharEncoder(cfg.dataPath)
+	if('-e' in sys.argv):
+		idx = sys.argv.index('-e')
+		cfg.mode = 'eval'
+		cfg.evalset = sys.argv[idx+1]
+		cfg.netpath = sys.argv[idx+2]
+	if('-o' in sys.argv):
+		idx = sys.argv.index('-o')
+		cfg.outDir = sys.argv[idx+1]
 
 def runTrain():
+	print('- Start training:')
 	lhandler = LoaderHandler()
-	ldTrain = lhandler.getLoader('train', dataPath, endec, batchSize=batchSize)
-	ldDev = lhandler.getLoader('dev', dataPath, endec)
-	net = LINet(hiddenSize)
+	net = LINet(cfg.hiddenSize, int(cfg.endec.inplen*5))
 	crit = Criterion()
-	trainer = Trainer(net, crit, ldTrain, ldDev, epochNum=epochNum, lr=lr)
+	trainer = Trainer(net, crit, lhandler, cfg, epochNum=cfg.epochNum, lr=cfg.lr, outdir=cfg.outDir)
 	net = trainer.train()
+	ldTest = lhandler.getLoader('test', cfg.dataPath, cfg.endec)
+	evaluator = Evaluator(outdir=cfg.outDir)
+	acc = evaluator.eval(net, ldTest)
+	print('- Accuracy on test set: '+str(np.round(acc)))
 	return net
 
-def runEval(netpath, mode):
-	# load net
+def runEval():
+	print('- Start evaluating:')
 	net = None
-	with open(netpath,'rb') as f:
+	with open(cfg.netpath,'rb') as f:
 		net = pickle.load(f)
-	# load dataloader & evaluator
 	lhandler = LoaderHandler()
-	loader = lhandler.getLoader(mode, dataPath, endec)
+	loader = lhandler.getLoader(cfg.evalset, cfg.dataPath, cfg.endec)
 	evaluator = Evaluator()
 	acc = evaluator.eval(net, loader)
-	print('Accuracy under '+mode+' mode is:'+str(acc))
+	print('- Accuracy on '+cfg.evalset+' set is:'+str(np.round(acc)))
 
 
 def main():
-	mode = sys.argv[1]
-	netpath = sys.argv[2]
-	if(mode=='train'):
+	parseCmd()
+	if(cfg.mode=='train'):
 		runTrain()
-	elif(mode=='dev' or mode=='test'):
-		runEval(netpath, mode)
 	else:
-		print('no such mode. please check your options.')
-		exit(0)
+		runEval()
 
 if __name__ == "__main__":
 	main()
