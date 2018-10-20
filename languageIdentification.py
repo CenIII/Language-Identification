@@ -63,7 +63,7 @@ def runEval():
 		net = pickle.load(f)
 	lhandler = LoaderHandler()
 	loader = lhandler.getLoader(cfg.evalset, cfg.dataPath, cfg.endec)
-	evaluator = Evaluator()
+	evaluator = Evaluator(outdir=cfg.outDir)
 	acc = evaluator.eval(net, loader)
 	print('- Accuracy on '+cfg.evalset+' set is:'+str(np.round(acc,2)))
 

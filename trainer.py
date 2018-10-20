@@ -99,7 +99,7 @@ class Evaluator(object):
 		if(loader.mode=='test'):
 			#TODO: print to file in self.savedir
 			lineList = loader._loadLines()
-			with open(os.path.join(self.savedir,'languageIdentificationPart1.output'),'w') as f:
+			with open(os.path.join(self.savedir,'languageIdentificationPart1.output'),'w',encoding='latin-1') as f:
 				for i in range(len(lineList)):
 					f.write(lineList[i][:-1]+' '+loader.n2w[predList[i]]+'\n')
 		# accuracy
