@@ -50,22 +50,19 @@ def runTrain():
 	crit = Criterion()
 	trainer = Trainer(net, crit, lhandler, cfg, epochNum=cfg.epochNum, lr=cfg.lr, outdir=cfg.outDir)
 	net = trainer.train()
-	ldTest = lhandler.getLoader('test', cfg.dataPath, cfg.endec)
-	evaluator = Evaluator(outdir=cfg.outDir)
-	acc = evaluator.eval(net, ldTest)
-	print('- Accuracy on test set: '+str(np.round(acc,2)))
+	runEval('test',os.path.join(cfg.outDir,'bestnet.obj'))
 	return net
 
-def runEval():
-	print('- Start evaluating:')
+def runEval(evalset, netpath):
+	print('- Start evaluating on '+evalset+':')
 	net = None
-	with open(cfg.netpath,'rb') as f:
+	with open(netpath,'rb') as f:
 		net = pickle.load(f)
 	lhandler = LoaderHandler()
-	loader = lhandler.getLoader(cfg.evalset, cfg.dataPath, cfg.endec)
+	loader = lhandler.getLoader(evalset, cfg.dataPath, cfg.endec, forceEval=True)
 	evaluator = Evaluator(outdir=cfg.outDir)
 	acc = evaluator.eval(net, loader)
-	print('- Accuracy on '+cfg.evalset+' set is:'+str(np.round(acc,2)))
+	print('- Accuracy on '+evalset+' set is:'+str(np.round(acc,2)))
 
 
 def main():
@@ -73,7 +70,7 @@ def main():
 	if(cfg.mode=='train'):
 		runTrain()
 	else:
-		runEval()
+		runEval(cfg.evalset, cfg.netpath)
 
 if __name__ == "__main__":
 	main()

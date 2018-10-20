@@ -181,12 +181,10 @@ class LoaderHandler(object):
 
 	def getLoader(self, mode, datapath, endec, batchSize=4, forceEval=False):
 		assert(mode in self.modeList)
-		if forceEval:
+		if forceEval or mode!='train':
 			return _EvalDataLoader(mode, datapath, endec)
-		if(mode=='train'):
-			return _TrainDataLoader(mode, datapath, endec, batchSize)
 		else:
-			return _EvalDataLoader(mode, datapath, endec)
+			return _TrainDataLoader(mode, datapath, endec, batchSize)
 
 
 
