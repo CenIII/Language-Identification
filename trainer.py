@@ -1,4 +1,6 @@
-#trainer
+# Name: Chuan Cen
+# Uniquename: chuancen
+
 import pickle
 import os
 import tqdm
@@ -36,6 +38,9 @@ class Trainer(object):
 	def train(self):
 		maxAcc = 0
 		accTrain, accDev = [], []
+		accTrain.append(self.evaluator.eval(self.net, self.loaderTrain))
+		accDev.append(self.evaluator.eval(self.net, self.loaderDev))
+		print('Initial Train acc: '+str(np.round(accTrain[-1],4))+' Dev acc: '+str(np.round(accDev[-1],4)))
 		for epoch in range(self.epochNum):
 			qdar = tqdm.tqdm(range(self.loader.stepNum),
 									total= self.loader.stepNum,
@@ -50,7 +55,7 @@ class Trainer(object):
 				qdar.set_postfix(loss=str(np.round(loss*1e4,2)))
 			accTrain.append(self.evaluator.eval(self.net, self.loaderTrain))
 			accDev.append(self.evaluator.eval(self.net, self.loaderDev))
-			print('epoch '+str(epoch)+' Train acc: '+str(np.round(accTrain[-1],2))+' Dev acc: '+str(np.round(accDev[-1],2)))
+			print('epoch '+str(epoch)+' Train acc: '+str(np.round(accTrain[-1],4))+' Dev acc: '+str(np.round(accDev[-1],4)))
 			if(accDev[-1] > maxAcc):
 				maxAcc = accDev[-1]
 				with open(os.path.join(self.savedir, 'bestnet.obj'), "wb") as f:

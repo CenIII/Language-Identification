@@ -1,4 +1,6 @@
-#layers
+# Name: Chuan Cen
+# Uniquename: chuancen
+
 import numpy as np
 
 class SigmoidLayer(object):

@@ -1,4 +1,6 @@
-#run
+# Name: Chuan Cen
+# Uniquename: chuancen
+
 import numpy as np
 import sys
 import pickle
@@ -62,7 +64,7 @@ def runEval(evalset, netpath):
 	loader = lhandler.getLoader(evalset, cfg.dataPath, cfg.endec, forceEval=True)
 	evaluator = Evaluator(outdir=cfg.outDir)
 	acc = evaluator.eval(net, loader)
-	print('- Accuracy on '+evalset+' set is:'+str(np.round(acc,2)))
+	print('- Accuracy on '+evalset+' set is:'+str(np.round(acc,4)))
 
 
 def main():

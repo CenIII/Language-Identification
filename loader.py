@@ -1,4 +1,6 @@
-# loader
+# Name: Chuan Cen
+# Uniquename: chuancen
+
 import numpy as np
 import os
 from sklearn.preprocessing import LabelEncoder
